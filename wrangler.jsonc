@@ -1,0 +1,63 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "agentbin",
+  "main": "src/index.js",
+  "compatibility_date": "2026-08-04",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    {
+      "pattern": "agentbin.sh/*",
+      "zone_name": "agentbin.sh"
+    }
+  ],
+  "vars": {
+    "PASTE_TTL_SECONDS": 3600
+  },
+  "unsafe": {
+    "bindings": [
+      {
+        "name": "CREATE_LIMIT",
+        "type": "ratelimit",
+        "namespace_id": "1001",
+        "simple": { "limit": 30, "period": 60 }
+      },
+      {
+        "name": "FEEDBACK_LIMIT",
+        "type": "ratelimit",
+        "namespace_id": "1002",
+        "simple": { "limit": 60, "period": 60 }
+      }
+    ]
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "PASTES",
+        "class_name": "PasteStore"
+      }
+    ]
+  },
+  "exports": {
+    "PasteStore": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
+  },
+  "rules": [
+    {
+      "type": "Text",
+      "globs": ["**/*.md", "**/*.sh"],
+      "fallthrough": true
+    }
+  ],
+  "observability": {
+    "enabled": true,
+    "logs": {
+      "enabled": true,
+      // Invocation logs include full request URLs; paste URLs contain the
+      // decryption key, so only the worker's redacted console lines are kept.
+      "invocation_logs": false
+    }
+  }
+}
