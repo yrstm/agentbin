@@ -70,6 +70,11 @@ try {
   assert.equal(installer.status, 200);
   assert.match(await installer.text(), /#!\/bin\/sh/);
 
+  const favicon = await fetch(`${baseUrl}/favicon.svg`);
+  assert.equal(favicon.status, 200);
+  assert.equal(favicon.headers.get("content-type"), "image/svg+xml");
+  assert.match(await favicon.text(), /^<svg /);
+
   const paste = await createPaste();
   let response = await fetch(paste.url);
   let body = await response.text();

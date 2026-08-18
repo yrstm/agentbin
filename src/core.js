@@ -181,6 +181,7 @@ const pageHead = (noindex) => `<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="Share coding-agent output, collect reviewer feedback, and bring it back into the agent session.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 ${noindex ? '<meta name="robots" content="noindex">\n' : ""}<title>agentbin.sh — share agent output and collect feedback</title>
 <style>${STYLE}</style>
 </head><body>
@@ -417,6 +418,9 @@ const PASTE_SCRIPT = `
 })();
 `;
 
+export const FAVICON_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="12" fill="#1b1915"/><text x="32" y="45" font-family="Menlo, Consolas, monospace" font-size="34" font-weight="700" text-anchor="middle" fill="#f1eee5">a<tspan fill="#2f6b46">b</tspan></text></svg>
+`;
+
 async function cspHash(source) {
   const digest = await crypto.subtle.digest("SHA-256", encoder.encode(source));
   return `'sha256-${btoa(String.fromCharCode(...new Uint8Array(digest)))}'`;
@@ -430,6 +434,7 @@ export async function buildCsp() {
     "default-src 'none'",
     `script-src ${home} ${paste} https://cdn.jsdelivr.net`,
     `style-src ${style}`,
+    "img-src 'self'",
     "form-action 'self'",
     "base-uri 'none'",
     "frame-ancestors 'none'",

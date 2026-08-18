@@ -2,6 +2,7 @@ import { DurableObject } from "cloudflare:workers";
 import SKILL_MD from "../skill/agentbin/SKILL.md";
 import INSTALL_SH from "../install.sh";
 import {
+  FAVICON_SVG,
   HttpError,
   ID_LENGTH,
   MAX_FEEDBACK_BYTES,
@@ -205,6 +206,15 @@ async function route(request, env) {
     if (!input.content.trim()) return text(request, "content required\n", 400);
     const { token, secret } = await createStoredPaste(env, input);
     return html(request, renderCreated(`${url.origin}/${token}`, token, secret));
+  }
+
+  if (url.pathname === "/favicon.svg") {
+    const invalidMethod = methodAllowed(request, ["GET", "HEAD"]);
+    if (invalidMethod) return invalidMethod;
+    return response(request, FAVICON_SVG, 200, {
+      "Content-Type": "image/svg+xml",
+      "Cache-Control": "public, max-age=86400",
+    });
   }
 
   if (url.pathname === "/skill" || url.pathname === "/install") {
